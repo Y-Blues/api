@@ -1,16 +1,17 @@
 """
   api description for endpoint bundle
 """
-from ycappuccino_api.core.api import CFQCN
+from ycappuccino_api.proxy.api import CFQCN
+from ycappuccino_api.proxy.api import YCappuccinoRemote
 
 
-class IRightManager(object):
+class IRightManager(YCappuccinoRemote):
     """ interface of service that manage right access  """
     name = CFQCN.build("IRightManager")
 
     def __init__(self):
         """ abstract constructor """
-        pass
+        super(YCappuccinoRemote,self).__init__()
 
 
     def is_authorized(self, a_token, a_url_path):
@@ -24,12 +25,13 @@ class IRightManager(object):
 
 
 
-class IEndpoint(object):
+class IEndpoint(YCappuccinoRemote):
     """ interface of generic endpoint that manage all redirection of request with specific parameter to a handler"""
     name = CFQCN.build("IEndpoint")
 
     def __init__(self):
         """ abstract constructor """
+        super(YCappuccinoRemote,self).__init__()
 
     def post(self, a_item_id, a_header, a_params, a_body):
         pass
@@ -44,12 +46,13 @@ class IEndpoint(object):
         pass
 
 
-class IHandlerEndpoint(object):
+class IHandlerEndpoint(YCappuccinoRemote):
     """ interface of generic handler endpoint that manage request for specific types"""
     name = CFQCN.build("IHandlerEndpoint")
 
     def __init__(self):
         """ abstract constructor """
+        super(YCappuccinoRemote,self).__init__()
 
     def get_types(self):
         pass

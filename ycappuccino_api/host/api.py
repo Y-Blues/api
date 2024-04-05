@@ -1,30 +1,30 @@
 #app="all"
-from ycappuccino_api.core.api import CFQCN
+from ycappuccino_api.proxy.api import YCappuccinoRemote, CFQCN
 
 
-
-
-class IClobReplaceService(object):
+class IClobReplaceService(YCappuccinoRemote):
     """ interface of YCappuccino component """
     name = CFQCN.build("IClobReplaceService")
 
     def __init__(self):
         """ abstract constructor """
-        pass
+        super(YCappuccinoRemote,self).__init__()
 
 
-class IHost(object):
+class IHost(YCappuccinoRemote):
     """ interface of that represent a path location for static file deliver by the server """
     name = CFQCN.build("IHost")
 
     def __init__(self):
         """ abstract constructor """
-        pass
+        super(YCappuccinoRemote,self).__init__()
 
-class IHostFactory(object):
+
+class IHostFactory(YCappuccinoRemote):
     """ interface of that create IHost regarding host models stored"""
     name = CFQCN.build("IHostFactory")
 
     def __init__(self):
         """ abstract constructor """
-        pass
+        super(YCappuccinoRemote,self).__init__()
+

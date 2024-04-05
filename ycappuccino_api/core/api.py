@@ -1,107 +1,82 @@
-'''
-
+"""
 Core api description
 
 @author: apisu
-'''
+"""
+
 import logging
+import uuid
+from abc import ABC
+from typing import Any
+
+from ycappuccino_api.core.base import (
+    CFQCN,
+    YCappuccinoComponent,
+    YCappuccinoComponentBind,
+)
+from ycappuccino_api.proxy.api import YCappuccinoRemote
 
 
-class CFQCN(object):
-    """
-    CFQCN class : Ful Qualified Class Name
-    """
-    @staticmethod
-    def build(aClassName):
-        wFQCN =  '.'.join(["ycappuccino_storage.api",aClassName])
-        wLog = logging.getLogger(__name__)
-        wLog.info("FQCN '{0}' ...".format(wFQCN))
-        return wFQCN
-
-
-class IActivityLogger(object):
-    """ Activity logger of the application. admit a property name that identified the logger"""
-    name = CFQCN.build("IActivityLogger")
+class IActivityLogger(YCappuccinoComponent, logging.Logger, ABC):
+    """Activity logger of the application. admit a property name that identified the logger"""
 
     def __init__(self):
-        """ abstract constructor """
+        super(IActivityLogger, self).__init__(
+            "activity-{}".format(uuid.uuid4().__str__())
+        )
 
 
-
-class IConfiguration(object):
-    """ interface of configuration service"""
-    name = CFQCN.build("IConfiguration")
-
-    def __init__(self):
-        """ abstract constructor """
-        pass
-
-
-class YCappuccino(object):
-    """ interface of YCappuccino component """
-    name = CFQCN.build("YCappuccino")
+class IConfiguration(YCappuccinoComponent, ABC):
+    """interface of configuration service"""
 
     def __init__(self):
-        """ abstract constructor """
-        self._id = None
+        super(YCappuccinoComponent, self).__init__()
 
-    def id(self):
-        return self._id
-
-class IListComponent(object):
-    """ interface of YCappuccino component that list of YCappuccino component """
-    name = CFQCN.build("IListComponent")
-
-    def __init__(self):
-        """ abstract constructor """
-        pass
-
-class IServerProxy(object):
-    """ interface of the service endpoint that list proxy """
-    name = CFQCN.build("IServerProxy")
-
-    def __init__(self):
-        """ abstract constructor """
-        pass
+    def get(self, a_key: str, a_default: str) -> Any:
+        raise NotImplementedError
 
 
+class IListComponent(YCappuccinoComponentBind, ABC):
+    """interface of YCappuccino component that list of YCappuccino component"""
 
-class IService(object):
-    """ interface that describe a service  """
-    name = CFQCN.build("IService")
+    def call(self, a_comp_name, a_method):
+        raise NotImplementedError
+
+
+class IServerProxy:
+    """interface of the service endpoint that list proxy"""
+
+
+class IService(YCappuccinoRemote):
+    """interface that describe a service"""
 
     def __init__(self):
-        pass
+        super().__init__()
 
-    def is_sercure(self):
+    def is_sercure(self) -> bool:
         return True
 
-    def has_post(self):
+    def has_post(self) -> bool:
         return True
 
-    def has_put(self):
+    def has_put(self) -> bool:
         return False
 
-    def has_get(self):
+    def has_get(self) -> bool:
         return False
 
-    def has_delete(self):
+    def has_delete(self) -> bool:
         return False
 
-    def has_root_path(self):
+    def has_root_path(self) -> bool:
         return True
 
-    def get_name(self):
+    def get_name(self) -> str:
         pass
 
-    def get_extra_path(self):
-        """ return the list of extra path that are manage by service """
-        return {
-            "post":[],
-            "get": [],
-            "put": [],
-            "delete": []
-        }
+    def get_extra_path(self) -> dict:
+        """return the list of extra path that are manage by service"""
+        return {"post": [], "get": [], "put": [], "delete": []}
 
     def post(self, a_header, a_url_path, a_body):
         pass
@@ -114,6 +89,3 @@ class IService(object):
 
     def delete(self, a_header, a_url_path):
         pass
-
-
-

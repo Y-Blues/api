@@ -1,6 +1,7 @@
 #app="all"
-from ycappuccino_api.core.api import CFQCN
-from ycappuccino_api.core.api import  IService
+from ycappuccino_api.proxy.api import CFQCN
+from ycappuccino_api.core.api import IService
+
 
 class IScheduler(IService):
     """ interface of a scheduler service"""
@@ -8,5 +9,5 @@ class IScheduler(IService):
 
     def __init__(self):
         """ abstract constructor """
-        pass
+        super(IService,self).__init__()
 

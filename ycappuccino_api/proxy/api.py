@@ -1,8 +1,20 @@
-import types
+import types, json
+from abc import ABC
 from pprint import pformat
 from pelix.ipopo.decorators import Property
 
-from ycappuccino_api.core.api import YCappuccino, CFQCN
+import logging
+
+from ycappuccino_api.core.base import CFQCN
+
+
+def get_class(kls):
+    parts = kls.split(".")
+    module = ".".join(parts[:-1])
+    m = __import__(module)
+    for comp in parts[1:]:
+        m = getattr(m, comp)
+    return m
 
 
 class ProxyMethodWrapper:
@@ -10,26 +22,27 @@ class ProxyMethodWrapper:
     Wrapper object for a method to be called.
     """
 
-    def __init__( self, obj, func, name ):
+    def __init__(self, obj, func, name):
         self.obj, self.func, self.name = obj, func, name
         assert obj is not None
         assert func is not None
         assert name is not None
 
-    def __call__( self, *args, **kwds ):
+    def __call__(self, *args, **kwds):
         return self.obj._method_call(self.name, self.func, *args, **kwds)
+
 
 class Proxy(object):
 
     def __init__(self):
-        self._objname = None
-        self._obj = None
+        self._objname: str = ""
+        self._obj: any = None
 
-    def __getattribute__(self, name):
+    def __getattribute__(self, name: str) -> types.MethodType:
         """
         Return a proxy wrapper object if this is a method call.
         """
-        if name.startswith('_'):
+        if name.startswith("_"):
             return object.__getattribute__(self, name)
         else:
             if self._obj is not None:
@@ -42,17 +55,17 @@ class Proxy(object):
             else:
                 return att
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: any) -> None:
         """
         Delegate [] syntax.
         """
-        name = '__setitem__'
+        name = "__setitem__"
         if self._obj is not None:
             att = getattr(self._obj, name)
         else:
             att = object.__getattribute__(self, name)
-        pmeth = ProxyMethodWrapper(self, att, name)
-        pmeth(key, value)
+        p_meth = ProxyMethodWrapper(self, att, name)
+        p_meth(key, value)
 
     def _call_str(self, name, *args, **kwds):
         """
@@ -61,11 +74,11 @@ class Proxy(object):
         """
         pargs = [pformat(x) for x in args]
         for k, v in kwds.iteritems():
-            pargs.append('%s=%s' % (k, pformat(v)))
+            pargs.append("%s=%s" % (k, pformat(v)))
         if self._objname is not None:
-            return '%s.%s(%s)' % (self._objname, name, ', '.join(pargs))
+            return "%s.%s(%s)" % (self._objname, name, ", ".join(pargs))
         else:
-            return '%s.%s(%s)' % (self.__str__(), name, ', '.join(pargs))
+            return "%s.%s(%s)" % (self.__str__(), name, ", ".join(pargs))
 
     def _method_call(self, name, func, *args, **kwds):
         """
@@ -73,7 +86,7 @@ class Proxy(object):
         """
         # pre-call hook for all calls.
         try:
-            prefunc = getattr(self, '_pre')
+            prefunc = getattr(self, "_pre")
         except AttributeError:
             pass
         else:
@@ -81,7 +94,7 @@ class Proxy(object):
 
         # pre-call hook for specific method.
         try:
-            prefunc = getattr(self, '_pre_%s' % name)
+            prefunc = getattr(self, "_pre_%s" % name)
         except AttributeError:
             pass
         else:
@@ -92,7 +105,7 @@ class Proxy(object):
 
         # post-call hook for specific method.
         try:
-            postfunc = getattr(self, '_post_%s' % name)
+            postfunc = getattr(self, "_post_%s" % name)
         except AttributeError:
             pass
         else:
@@ -100,7 +113,7 @@ class Proxy(object):
 
         # post-call hook for all calls.
         try:
-            postfunc = getattr(self, '_post')
+            postfunc = getattr(self, "_post")
         except AttributeError:
             pass
         else:
@@ -108,12 +121,43 @@ class Proxy(object):
 
         return rval
 
-@Property("_obj","object",None)
-@Property("_objname","object_name",None)
-class YCappuccinoProxy(YCappuccino, Proxy):
-    """ interface of YCappuccino component """
-    name = CFQCN.build("YCappuccinoProxy")
+
+class YCappuccinoRemote(object):
+    """interface of YCappuccino component"""
+
+    name = CFQCN.build("YCappuccinoRemote")
 
     def __init__(self):
-        """ abstract constructor """
-        super().__init__()
+        """abstract constructor"""
+        self._specifications: list = []
+        self._id: str = ""
+        self._component_properties: dict = {}
+        self._remote_server_id: str = ""
+        self._methods: list = dir(self)
+
+    def get_component_properties_id(self) -> str:
+        prop = self._component_properties.copy()
+        prop["specifications"] = self._specifications
+        prop["remote_server_id"] = self._remote_server_id
+        prop["methods"] = self._methods
+
+        return json.dumps(prop)
+
+    def get_specifications(self) -> list:
+        return self._specifications
+
+    def set_specifications(self, a_specifications: list) -> None:
+        self._specifications = a_specifications
+
+    def set_component_properties(self, a_component_properties: dict) -> None:
+        self._component_properties = a_component_properties.copy()
+        w_object_class = self._component_properties["objectClass"]
+        self._specifications = []
+        for w_class in w_object_class:
+            self._specifications.append(w_class)
+
+    def set_component_id_remote(self, a_component_id_remote: str) -> None:
+        self._remote_server_id = a_component_id_remote
+
+    def id(self) -> str:
+        return self._id

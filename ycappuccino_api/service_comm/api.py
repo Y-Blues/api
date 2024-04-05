@@ -1,8 +1,7 @@
 #app="all"
 
-from ycappuccino_api.core.api import CFQCN, YCappuccino
 from ycappuccino_api.storage.api import IRightSubject
-
+from ycappuccino_api.proxy.api import CFQCN
 
 
 class IRemoteServer(IRightSubject):
@@ -12,7 +11,7 @@ class IRemoteServer(IRightSubject):
 
     def __init__(self):
         """ abstract constructor """
-        super().__init__()
+        super(IRightSubject,self).__init__()
 
 
 class IRemoteComponentProxy(object):
@@ -22,6 +21,7 @@ class IRemoteComponentProxy(object):
     def __init__(self):
         """ abstract constructor """
         pass
+
 
 class IRemoteClient(object):
     """ interface of proxy component that allow to bind all
@@ -39,6 +39,7 @@ class IRemoteComponentProxyFactory(object):
     def __init__(self):
         """ abstract constructor """
         pass
+
 
 class IRemoteClientFactory(object):
     """ interface of proxy component that allow to bind all
