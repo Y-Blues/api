@@ -9,12 +9,8 @@ import uuid
 from abc import ABC
 from typing import Any
 
-from ycappuccino_api.core.base import (
-    CFQCN,
-    YCappuccinoComponent,
-    YCappuccinoComponentBind,
-)
-from src.main.python.proxy import YCappuccinoRemote
+from ycappuccino.api.core.base import YCappuccinoComponent, YCappuccinoComponentBind
+from ycappuccino.api.proxy.api import YCappuccinoRemote
 
 
 class IActivityLogger(YCappuccinoComponent, logging.Logger, ABC):

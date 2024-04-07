@@ -1,6 +1,6 @@
 # app="all"
-from src.main.python.proxy import CFQCN
-from ycappuccino_api.core.api import IService
+from ycappuccino.api.core import IService
+from ycappuccino.api.core.base import CFQCN
 
 
 class IScheduler(IService):

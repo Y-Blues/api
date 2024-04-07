@@ -1,11 +1,7 @@
 import types, json
-from abc import ABC
 from pprint import pformat
-from pelix.ipopo.decorators import Property
 
-import logging
-
-from ycappuccino_api.core.base import CFQCN
+from ycappuccino.api.core.base import CFQCN
 
 
 def get_class(kls):
@@ -51,7 +47,7 @@ class Proxy(object):
                 att = object.__getattribute__(self, name)
 
             if type(att) is types.MethodType:
-                return ProxyMethodWrapper(self, att, name)
+                return ProxyMethodWrapper(self, att, name)  # type: ignore
             else:
                 return att
 
@@ -73,7 +69,7 @@ class Proxy(object):
         This can be used for tracing.
         """
         pargs = [pformat(x) for x in args]
-        for k, v in kwds.iteritems():
+        for k, v in kwds.items():
             pargs.append("%s=%s" % (k, pformat(v)))
         if self._objname is not None:
             return "%s.%s(%s)" % (self._objname, name, ", ".join(pargs))
