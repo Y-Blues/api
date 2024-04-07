@@ -14,7 +14,7 @@ from ycappuccino_api.core.base import (
     YCappuccinoComponent,
     YCappuccinoComponentBind,
 )
-from ycappuccino_api.proxy.api import YCappuccinoRemote
+from src.main.python.proxy import YCappuccinoRemote
 
 
 class IActivityLogger(YCappuccinoComponent, logging.Logger, ABC):
