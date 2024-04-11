@@ -1,6 +1,6 @@
 # app="all"
-from src.main.python.proxy import CFQCN
-from src.main.python.proxy import YCappuccinoRemote
+from ycappuccino.api.core.base import CFQCN
+from ycappuccino.api.proxy.api import YCappuccinoRemote
 
 
 class IScriptInterpreter(YCappuccinoRemote):

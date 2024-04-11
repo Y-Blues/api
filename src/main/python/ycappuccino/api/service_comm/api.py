@@ -1,7 +1,7 @@
 # app="all"
 
-from ycappuccino_api.storage.api import IRightSubject
-from src.main.python.proxy import CFQCN
+from ycappuccino.api.core.base import CFQCN
+from ycappuccino.api.proxy.api import YCappuccinoRemote
 
 
 class IRemoteServer(IRightSubject):

@@ -1,11 +1,8 @@
 import types, json
-from abc import ABC
 from pprint import pformat
-from pelix.ipopo.decorators import Property
 
-import logging
 
-from ycappuccino_api.core.base import CFQCN
+from ycappuccino.api.core.base import CFQCN
 
 
 def get_class(kls):
