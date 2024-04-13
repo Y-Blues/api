@@ -8,8 +8,10 @@ import logging
 import uuid
 from abc import ABC
 from typing import Any
-
-from ycappuccino.api.core.base import YCappuccinoComponent, YCappuccinoComponentBind
+from ycappuccino.api.core.base import (
+    YCappuccinoComponent,
+    YCappuccinoComponentBind,
+)
 from ycappuccino.api.proxy.api import YCappuccinoRemote
 
 

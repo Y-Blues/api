@@ -2,8 +2,8 @@
   api description for endpoint bundle
 """
 
-from ycappuccino.api.core.base import CFQCN
-from ycappuccino.api.proxy.api import YCappuccinoRemote
+from ycappuccino.api.proxy import CFQCN
+from ycappuccino.api.proxy import YCappuccinoRemote
 
 
 class IRightManager(YCappuccinoRemote):

@@ -1,6 +1,7 @@
 import types, json
 from pprint import pformat
 
+
 from ycappuccino.api.core.base import CFQCN
 
 
@@ -47,7 +48,7 @@ class Proxy(object):
                 att = object.__getattribute__(self, name)
 
             if type(att) is types.MethodType:
-                return ProxyMethodWrapper(self, att, name)  # type: ignore
+                return ProxyMethodWrapper(self, att, name)
             else:
                 return att
 
@@ -69,7 +70,7 @@ class Proxy(object):
         This can be used for tracing.
         """
         pargs = [pformat(x) for x in args]
-        for k, v in kwds.items():
+        for k, v in kwds.iteritems():
             pargs.append("%s=%s" % (k, pformat(v)))
         if self._objname is not None:
             return "%s.%s(%s)" % (self._objname, name, ", ".join(pargs))
