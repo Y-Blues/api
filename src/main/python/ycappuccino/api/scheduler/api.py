@@ -1,6 +1,6 @@
 # app="all"
+from ycappuccino.api.core import IService
 from ycappuccino.api.core.base import CFQCN
-from ycappuccino.api.proxy.api import YCappuccinoRemote
 
 
 class IScheduler(IService):

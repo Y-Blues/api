@@ -3,7 +3,6 @@ from __future__ import annotations
 import abc
 import typing as t
 import logging
-from pelix.ipopo.decorators import Validate, Invalidate, BindField, UnbindField
 
 
 class CFQCN(object):
