@@ -2,7 +2,7 @@ import types, json
 from pprint import pformat
 
 
-from ycappuccino.api.core.base import CFQCN
+from ycappuccino.api.core_base import CFQCN
 
 
 def get_class(kls):

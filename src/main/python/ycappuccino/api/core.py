@@ -8,11 +8,11 @@ import logging
 import uuid
 from abc import ABC
 from typing import Any
-from ycappuccino.api.core.base import (
+from ycappuccino.api.core_base import (
     YCappuccinoComponent,
     YCappuccinoComponentBind,
 )
-from ycappuccino.api.proxy.api import YCappuccinoRemote
+from ycappuccino.api.proxy import YCappuccinoRemote
 
 
 class IActivityLogger(YCappuccinoComponent, logging.Logger, ABC):
