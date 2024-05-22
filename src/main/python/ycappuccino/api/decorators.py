@@ -3,106 +3,19 @@
 list of decorator for declaring models in application in a ORM Ycappuccino mechanism
 """
 
-from __future__ import annotations
 import typing as t
 
 # decorators to describe item and element to store in mongo if it's mongo element
 import functools
 
-from .utils import YDict  # type: ignore
 
-primitive = (
-    int,
-    str,
-    bool,
-    float,
-)
+class YDict(object):
 
-# identified item by id
-map_item: dict[str, Item] = {}
-# manage tree of item to have dependencies
-tree_item: dict[str, t.Any] = {}
-# identified item by class name
-map_item_by_class: dict[str, Item] = {}
-
-
-def get_item_by_class(a_class):
-    return map_item_by_class[a_class.__name__]
-
-
-def get_item(a_id):
-    return map_item[a_id]
-
-
-def get_tree_item():
-    return tree_item
-
-
-def get_bundle_model_ordered():
-    w_root = tree_item["root"]
-    w_ordered_list = []
-    w_ordered_list.append("ycappuccino_storage.ycappuccino_core.models.decorators")
-    w_ordered_list.append("ycappuccino_storage.ycappuccino_core.models.utils")
-    w_ordered_list.append("ycappuccino_storage.ycappuccino_core.decorator_app")
-    for w_item in get_bundle_model(w_root):
-        w_ordered_list.append(w_item)
-
-    return w_ordered_list
-
-
-def get_bundle_model(a_tree_item):
-    w_ordered_list = []
-    w_ordered_list.append(a_tree_item["elem"]["_class_obj"].__module__)
-    if "sons" in a_tree_item.keys():
-        for w_item in a_tree_item["sons"]:
-            for w_son_module in get_bundle_model(w_item):
-                w_ordered_list.append(w_son_module)
-
-    return w_ordered_list
-
-
-def get_map_items():
-    w_items = []
-    for w_key in map_item:
-        w_items.append(map_item[w_key])
-    return w_items
-
-
-def get_map_items_emdpoint():
-    w_items = []
-    for w_key in map_item:
-        w_dict = map_item[w_key].copy()
-        del w_dict["_class"]
-        w_dict["python_module"] = w_dict["_class_obj"].__module__
-        del w_dict["_class_obj"]
-
-        w_items.append(w_dict)
-    return w_items
-
-
-def has_father_item(a_item_id):
-    return map_item[a_item_id].father is not None
-
-
-def get_sons_item(a_item_id):
-    w_list_son = []
-    for w_item in map_item.values():
-        if w_item.father == a_item_id:
-            w_list_son.append(w_item)
-    return w_list_son
-
-
-def get_sons_item_id(a_item_id):
-    w_list_son = [a_item_id]
-    w_item_father = map_item[a_item_id]
-    for w_item in map_item.values():
-        if (
-            "father" in w_item.keys()
-            and w_item["father"] is not None
-            and w_item["father"] == w_item_father["_class"]
-        ):
-            w_list_son.append(w_item["id"])
-    return w_list_son
+    def __init__(self, *a_tuple):
+        for t in a_tuple:
+            if isinstance(t, dict):
+                for k, v in t.items():
+                    setattr(self, k, v)
 
 
 class Item(object):
@@ -392,6 +305,100 @@ def References(name):
         return wrapper_reference
 
     return decorator_reference
+
+
+primitive = (
+    int,
+    str,
+    bool,
+    float,
+)
+
+# identified item by id
+map_item: dict[str, Item] = {}
+# manage tree of item to have dependencies
+tree_item: dict[str, t.Any] = {}
+# identified item by class name
+map_item_by_class: dict[str, Item] = {}
+
+
+def get_item_by_class(a_class):
+    return map_item_by_class[a_class.__name__]
+
+
+def get_item(a_id):
+    return map_item[a_id]
+
+
+def get_tree_item():
+    return tree_item
+
+
+def get_bundle_model_ordered():
+    w_root = tree_item["root"]
+    w_ordered_list = []
+    w_ordered_list.append("ycappuccino_storage.ycappuccino_core.models.decorators")
+    w_ordered_list.append("ycappuccino_storage.ycappuccino_core.models.utils")
+    w_ordered_list.append("ycappuccino_storage.ycappuccino_core.decorator_app")
+    for w_item in get_bundle_model(w_root):
+        w_ordered_list.append(w_item)
+
+    return w_ordered_list
+
+
+def get_bundle_model(a_tree_item):
+    w_ordered_list = []
+    w_ordered_list.append(a_tree_item["elem"]["_class_obj"].__module__)
+    if "sons" in a_tree_item.keys():
+        for w_item in a_tree_item["sons"]:
+            for w_son_module in get_bundle_model(w_item):
+                w_ordered_list.append(w_son_module)
+
+    return w_ordered_list
+
+
+def get_map_items():
+    w_items = []
+    for w_key in map_item:
+        w_items.append(map_item[w_key])
+    return w_items
+
+
+def get_map_items_emdpoint():
+    w_items = []
+    for w_key in map_item:
+        w_dict = map_item[w_key].copy()
+        del w_dict["_class"]
+        w_dict["python_module"] = w_dict["_class_obj"].__module__
+        del w_dict["_class_obj"]
+
+        w_items.append(w_dict)
+    return w_items
+
+
+def has_father_item(a_item_id):
+    return map_item[a_item_id].father is not None
+
+
+def get_sons_item(a_item_id):
+    w_list_son = []
+    for w_item in map_item.values():
+        if w_item.father == a_item_id:
+            w_list_son.append(w_item)
+    return w_list_son
+
+
+def get_sons_item_id(a_item_id):
+    w_list_son = [a_item_id]
+    w_item_father = map_item[a_item_id]
+    for w_item in map_item.values():
+        if (
+            "father" in w_item.keys()
+            and w_item["father"] is not None
+            and w_item["father"] == w_item_father["_class"]
+        ):
+            w_list_son.append(w_item["id"])
+    return w_list_son
 
 
 if __name__ == "__main__":

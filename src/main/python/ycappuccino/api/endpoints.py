@@ -7,6 +7,7 @@ from ycappuccino.api.proxy import YCappuccinoRemote
 
 
 import logging
+
 """
    utilities to read header
 """
@@ -201,7 +202,7 @@ class UrlPathModel(UrlPath):
         return self._item_plural_id
 
 
-def check_header( a_jwt , a_headers):
+def check_header(a_jwt, a_headers):
     w_token = get_token_from_header(a_headers)
     if w_token is None:
         return False
@@ -219,7 +220,7 @@ def get_token_from_header(a_headers):
     if "authorization" in a_headers:
         w_authorization = a_headers["authorization"]
         if w_authorization is not None and "Bearer" in w_authorization:
-            w_token = w_authorization[len("Bearer "):]
+            w_token = w_authorization[len("Bearer ") :]
             return w_token
         else:
             return None
@@ -252,6 +253,13 @@ class IRightManager(YCappuccinoRemote):
 
     def verify(self, a_token):
         return False
+
+    def get_tokens_decoded(self):
+        return None
+
+    def get_token_decoded(self, a_token):
+
+        return None
 
 
 class IEndpoint(YCappuccinoRemote):

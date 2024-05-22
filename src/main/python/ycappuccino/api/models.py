@@ -1,13 +1,10 @@
-from ycappuccino.api.decorators import Item, get_item, get_item_by_class, Property
-
-
-class YDict(object):
-
-    def __init__(self, *a_tuple):
-        for t in a_tuple:
-            if isinstance(t, dict):
-                for k, v in t.items():
-                    setattr(self, k, v)
+from ycappuccino.api.decorators import (
+    Item,
+    get_item,
+    get_item_by_class,
+    Property,
+    YDict,
+)
 
 
 def create_item(a_item, w_model):
