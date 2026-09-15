@@ -22,11 +22,22 @@ class ServiceResult:
     headers: dict = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class ServiceRoute:
+    """a request answered by a service, documented in the API descriptions (swagger)"""
+    method: str
+    # extra path after the service name; "{name}" segments are path parameters
+    path: str = ""
+    summary: str = ""
+
+
 class IExposedService(YCappuccinoComponent, ABC):
     """a named action, published under its name"""
 
     name: str = ""
     secure: bool = True
+    # ServiceRoute instances describing the requests the service answers; empty: undocumented
+    routes: tuple = ()
 
     @abstractmethod
     async def call(
