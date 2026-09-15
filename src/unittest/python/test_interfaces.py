@@ -191,5 +191,41 @@ class TestHttpServerInterfaces(unittest.TestCase):
         self.assertTrue(inspect.iscoroutinefunction(IAuthentication.authenticate))
 
 
+class TestEndpointsServiceInterfaces(unittest.TestCase):
+
+    def test_interfaces_are_abstract_components(self):
+        from ycappuccino.api.endpoints_service import IExposedService, IServiceEndpoint
+
+        for klass in (IExposedService, IServiceEndpoint):
+            with self.subTest(interface=klass.__name__):
+                self.assertTrue(issubclass(klass, YCappuccinoComponent))
+                self.assertTrue(inspect.isabstract(klass))
+
+    def test_call_is_a_coroutine(self):
+        from ycappuccino.api.endpoints_service import IExposedService, IServiceEndpoint
+
+        self.assertTrue(inspect.iscoroutinefunction(IExposedService.call))
+        self.assertTrue(inspect.iscoroutinefunction(IServiceEndpoint.call))
+
+    def test_exposed_service_defaults(self):
+        from ycappuccino.api.endpoints_service import IExposedService
+
+        self.assertEqual((IExposedService.name, IExposedService.secure), ("", True))
+
+    def test_service_result_is_a_dataclass_with_independent_headers(self):
+        from ycappuccino.api.endpoints_service import ServiceResult
+
+        result = ServiceResult(body={"a": 1})
+        result.headers["x"] = "1"
+
+        self.assertEqual(result.body, {"a": 1})
+        self.assertEqual(ServiceResult(body=None).headers, {})
+
+    def test_call_action(self):
+        from ycappuccino.api.endpoints_service import CALL
+
+        self.assertEqual(CALL, "call")
+
+
 if __name__ == "__main__":
     unittest.main()
