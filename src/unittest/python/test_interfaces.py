@@ -181,5 +181,15 @@ class TestEndpointsStorageInterfaces(unittest.TestCase):
         )
 
 
+class TestHttpServerInterfaces(unittest.TestCase):
+
+    def test_authentication_is_an_abstract_coroutine(self):
+        from ycappuccino.api.http_server import IAuthentication
+
+        self.assertTrue(issubclass(IAuthentication, YCappuccinoComponent))
+        self.assertTrue(inspect.isabstract(IAuthentication))
+        self.assertTrue(inspect.iscoroutinefunction(IAuthentication.authenticate))
+
+
 if __name__ == "__main__":
     unittest.main()
