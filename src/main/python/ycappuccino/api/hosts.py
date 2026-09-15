@@ -1,6 +1,6 @@
 # app="all"
-from ycappuccino.api.core.base import CFQCN
-from ycappuccino.api.proxy.api import YCappuccinoRemote
+from ycappuccino.api.core_base import CFQCN
+from ycappuccino.api.proxy import YCappuccinoRemote
 
 
 class IClobReplaceService(YCappuccinoRemote):
@@ -10,7 +10,7 @@ class IClobReplaceService(YCappuccinoRemote):
 
     def __init__(self):
         """abstract constructor"""
-        super(YCappuccinoRemote, self).__init__()
+        super().__init__()
 
 
 class IHost(YCappuccinoRemote):
@@ -20,7 +20,7 @@ class IHost(YCappuccinoRemote):
 
     def __init__(self):
         """abstract constructor"""
-        super(YCappuccinoRemote, self).__init__()
+        super().__init__()
 
 
 class IHostFactory(YCappuccinoRemote):
@@ -30,4 +30,4 @@ class IHostFactory(YCappuccinoRemote):
 
     def __init__(self):
         """abstract constructor"""
-        super(YCappuccinoRemote, self).__init__()
+        super().__init__()

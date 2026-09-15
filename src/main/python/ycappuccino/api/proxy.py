@@ -2,7 +2,7 @@ import types, json
 from pprint import pformat
 
 
-from ycappuccino.api.core.base import CFQCN
+from ycappuccino.api.core_base import CFQCN
 
 
 def get_class(kls):
@@ -70,7 +70,7 @@ class Proxy(object):
         This can be used for tracing.
         """
         pargs = [pformat(x) for x in args]
-        for k, v in kwds.iteritems():
+        for k, v in kwds.items():
             pargs.append("%s=%s" % (k, pformat(v)))
         if self._objname is not None:
             return "%s.%s(%s)" % (self._objname, name, ", ".join(pargs))

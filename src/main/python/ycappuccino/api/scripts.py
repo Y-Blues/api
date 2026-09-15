@@ -1,6 +1,6 @@
 # app="all"
-from ycappuccino.api.core.base import CFQCN
-from ycappuccino.api.proxy.api import YCappuccinoRemote
+from ycappuccino.api.core_base import CFQCN
+from ycappuccino.api.proxy import YCappuccinoRemote
 
 
 class IScriptInterpreter(YCappuccinoRemote):
@@ -10,4 +10,4 @@ class IScriptInterpreter(YCappuccinoRemote):
 
     def __init__(self):
         """abstract constructor"""
-        super(YCappuccinoRemote, self).__init__()
+        super().__init__()
