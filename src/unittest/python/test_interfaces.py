@@ -159,6 +159,13 @@ class TestHttpServerInterfaces(unittest.TestCase):
         self.assertTrue(inspect.isabstract(IAuthentication))
         self.assertTrue(inspect.iscoroutinefunction(IAuthentication.authenticate))
 
+    def test_authentication_sees_the_whole_request(self):
+        from ycappuccino.api.http_server import IAuthentication
+
+        parameters = list(inspect.signature(IAuthentication.authenticate).parameters)
+
+        self.assertEqual(parameters, ["self", "headers", "method", "path", "body"])
+
 
 class TestEndpointsServiceInterfaces(unittest.TestCase):
 
