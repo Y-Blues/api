@@ -11,19 +11,19 @@ import functools
 
 class YDict(object):
 
-    def __init__(self, *a_tuple):
-        for t in a_tuple:
-            if isinstance(t, dict):
-                for k, v in t.items():
+    def __init__(self, *a_tuple: t.Any) -> None:
+        for t_ in a_tuple:
+            if isinstance(t_, dict):
+                for k, v in t_.items():
                     setattr(self, k, v)
 
 
-def _class_name(klass):
+def _class_name(klass: type) -> str:
     """registry key of a model class: classes with the same name in different modules stay distinct"""
     return f"{klass.__module__}.{klass.__qualname__}"
 
 
-def _property_schema(name, type, **constraints):
+def _property_schema(name: str, type: str, **constraints: t.Any) -> dict:
     schema = {"type": type, "description": "{}".format(name)}
     for constraint, value in constraints.items():
         if value is not None:
@@ -31,14 +31,14 @@ def _property_schema(name, type, **constraints):
     return schema
 
 
-def _register_property(item, metadata):
+def _register_property(item: dict, metadata: dict) -> None:
     item["schema"]["properties"][metadata["name"]] = dict(metadata["schema"])
     private_properties = item.setdefault("private_property", [])
     if metadata["private"] and metadata["name"] not in private_properties:
         private_properties.append(metadata["name"])
 
 
-def _register_class_properties(klass, item):
+def _register_class_properties(klass: type, item: dict) -> None:
     """declare in the item the @Property setters of the class and of its parents"""
     for attribute_name in dir(klass):
         attribute = getattr(klass, attribute_name, None)
@@ -51,17 +51,17 @@ class Item(object):
     # Make copy of original __init__, so we can call it without recursion
     def __init__(
         self,
-        collection,
-        name,
-        plural,
-        abstract=False,
-        module="system",
-        app="ycappuccino_core",
-        secure_read=False,
-        secure_write=False,
-        is_writable=True,
-        multipart=None,
-    ):
+        collection: str,
+        name: str,
+        plural: str,
+        abstract: bool = False,
+        module: str = "system",
+        app: str = "ycappuccino_core",
+        secure_read: bool = False,
+        secure_write: bool = False,
+        is_writable: bool = True,
+        multipart: t.Any = None,
+    ) -> None:
         self._meta_name = name
         self._meta_collection = collection
         self._meta_module = module
@@ -86,7 +86,7 @@ class Item(object):
             "empty": None,
         }
 
-    def __call__(self, obj):
+    def __call__(self, obj: type) -> type:
         self._super_class = (
             _class_name(obj.__bases__[0])
             if len(obj.__bases__) > 0 and obj.__bases__[0] is not YDict
@@ -142,12 +142,12 @@ class Item(object):
 
 class ItemReference(object):
     # Make copy of original __init__, so we can call it without recursion
-    def __init__(self, from_name, field, item):
+    def __init__(self, from_name: str, field: str, item: str) -> None:
         self._local_field = field
         self._item_id = item
         self._from_name = from_name
 
-    def __call__(self, obj):
+    def __call__(self, obj: type) -> type:
         a_class = _class_name(obj)
         a_item_id = self._item_id
         local_field = self._local_field
@@ -192,12 +192,12 @@ class ItemReference(object):
         return obj
 
 
-def Empty():
+def Empty() -> t.Callable[[t.Callable], t.Callable]:
     """decoration that manage property with another collection"""
 
-    def decorator_property(func):
+    def decorator_property(func: t.Callable) -> t.Callable:
         @functools.wraps(func)
-        def wrapper_proprety(*args, **kwargs):
+        def wrapper_proprety(*args, **kwargs) -> t.Any:
             value = func(*args, **kwargs)
 
             w_item = map_item_by_class[_class_name(type(value))]
@@ -210,21 +210,21 @@ def Empty():
 
 
 def Property(
-    name,
-    type="string",
-    minLength=None,
-    maxLength=None,
-    minimum=None,
-    exclusiveMinimum=None,
-    maximum=None,
-    exclusiveMaximum=None,
-    private=False,
-):
+    name: str,
+    type: str = "string",
+    minLength: int | None = None,
+    maxLength: int | None = None,
+    minimum: float | None = None,
+    exclusiveMinimum: float | None = None,
+    maximum: float | None = None,
+    exclusiveMaximum: float | None = None,
+    private: bool = False,
+) -> t.Callable[[t.Callable], t.Callable]:
     """decoration that manage property with another collection"""
 
-    def decorator_property(func):
+    def decorator_property(func: t.Callable) -> t.Callable:
         @functools.wraps(func)
-        def wrapper_proprety(*args, **kwargs):
+        def wrapper_proprety(*args, **kwargs) -> t.Any:
             value = func(*args, **kwargs)
             w_name = name
 
@@ -263,12 +263,12 @@ def Property(
     return decorator_property
 
 
-def Reference(name):
+def Reference(name: str) -> t.Callable[[t.Callable], t.Callable]:
     """decoration that manage reference with another collection"""
 
-    def decorator_reference(func):
+    def decorator_reference(func: t.Callable) -> t.Callable:
         @functools.wraps(func)
-        def wrapper_reference(*args, **kwargs):
+        def wrapper_reference(*args, **kwargs) -> t.Any:
             value = func(*args)
             if args[0] is not None:
                 _add_ref(name, args)
@@ -279,22 +279,22 @@ def Reference(name):
     return decorator_reference
 
 
-def _storage_model(a_model):
+def _storage_model(a_model: t.Any) -> dict:
     if "_mongo_model" not in a_model.__dict__:
         a_model._mongo_model = {}
     return a_model._mongo_model
 
 
-def _add_ref(name, args):
+def _add_ref(name: str, args: tuple) -> None:
     _storage_model(args[0])[name] = {"ref": args[1]}
 
 
-def References(name):
+def References(name: str) -> t.Callable[[t.Callable], t.Callable]:
     """decoration that manage reference with another collection"""
 
-    def decorator_reference(func):
+    def decorator_reference(func: t.Callable) -> t.Callable:
         @functools.wraps(func)
-        def wrapper_reference(*args, **kwargs):
+        def wrapper_reference(*args, **kwargs) -> t.Any:
             value = func(*args, **kwargs)
             if args[0] is not None:
                 w_obj_ref = {"ref": args[1]}
@@ -324,26 +324,26 @@ primitive = (
 )
 
 # identified item by id
-map_item: dict[str, Item] = {}
+map_item: dict[str, dict] = {}
 # manage tree of item to have dependencies
 tree_item: dict[str, t.Any] = {}
 # identified item by qualified class name (module.QualName)
-map_item_by_class: dict[str, Item] = {}
+map_item_by_class: dict[str, dict] = {}
 
 
-def get_item_by_class(a_class):
+def get_item_by_class(a_class: type) -> dict:
     return map_item_by_class[_class_name(a_class)]
 
 
-def get_item(a_id):
+def get_item(a_id: str) -> dict:
     return map_item[a_id]
 
 
-def get_tree_item():
+def get_tree_item() -> dict:
     return tree_item
 
 
-def get_bundle_model_ordered():
+def get_bundle_model_ordered() -> list:
     w_root = tree_item["root"]
     w_ordered_list = []
     w_ordered_list.append("ycappuccino.api.decorators")
@@ -355,7 +355,7 @@ def get_bundle_model_ordered():
     return w_ordered_list
 
 
-def get_bundle_model(a_tree_item):
+def get_bundle_model(a_tree_item: dict) -> list:
     w_ordered_list = []
     w_ordered_list.append(a_tree_item["elem"]["_class_obj"].__module__)
     if "sons" in a_tree_item.keys():
@@ -366,14 +366,14 @@ def get_bundle_model(a_tree_item):
     return w_ordered_list
 
 
-def get_map_items():
+def get_map_items() -> list:
     w_items = []
     for w_key in map_item:
         w_items.append(map_item[w_key])
     return w_items
 
 
-def get_map_items_emdpoint():
+def get_map_items_emdpoint() -> list:
     w_items = []
     for w_key in map_item:
         w_dict = map_item[w_key].copy()
@@ -385,18 +385,18 @@ def get_map_items_emdpoint():
     return w_items
 
 
-def has_father_item(a_item_id):
+def has_father_item(a_item_id: str) -> bool:
     return map_item[a_item_id].get("father") is not None
 
 
-def get_sons_item(a_item_id):
+def get_sons_item(a_item_id: str) -> list:
     w_father_class = map_item[a_item_id]["_class"]
     return [
         w_item for w_item in map_item.values() if w_item.get("father") == w_father_class
     ]
 
 
-def get_sons_item_id(a_item_id):
+def get_sons_item_id(a_item_id: str) -> list:
     w_list_son = [a_item_id]
     w_item_father = map_item[a_item_id]
     for w_item in map_item.values():
@@ -414,12 +414,12 @@ if __name__ == "__main__":
     @Item(collection="col", name="name", plural="names")
     class Test(object):
 
-        def __init__(self):
+        def __init__(self) -> None:
             self._toto = "toto"
             self._name = None
 
         @Property(name="foo")
-        def name(self, a_value):
+        def name(self, a_value: t.Any) -> None:
             self._name = a_value
 
     test = Test()

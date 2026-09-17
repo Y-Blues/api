@@ -8,37 +8,8 @@ A subject is the dict decoded from the JWT: {"sub": <account id>, "tid": <tenant
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from ycappuccino.api.core_base import CFQCN, YCappuccinoComponent
+from ycappuccino.api.core_base import YCappuccinoComponent
 from ycappuccino.api.models import Model
-from ycappuccino.api.proxy import YCappuccinoRemote
-
-
-class IRightSubject(YCappuccinoRemote):
-    name = CFQCN.build("IRightSubject")
-
-    def __init__(self):
-        """abstract constructor"""
-        super().__init__()
-
-    def get_token_subject(self, a_subsystem, a_tenant):
-        return {"sub": a_subsystem, "tid": a_tenant}
-
-
-class IBootStrap(IRightSubject):
-    """Manage bootstrap interface. it allow to initialize for an item data or do a bootstrap operation"""
-
-    name = CFQCN.build("IBootStrap")
-
-    def __init__(self):
-        """abstract constructor"""
-        super().__init__()
-
-    def bootstrap(self):
-        """method call while manage is initialized and finish to allow to bootstrap operation"""
-        pass
-
-    def get_id(self):
-        pass
 
 
 class IStorage(YCappuccinoComponent, ABC):

@@ -11,7 +11,7 @@ class CFQCN(object):
     """
 
     @staticmethod
-    def build(a_class_name: str):
+    def build(a_class_name: str) -> str:
         w_fqcn = ".".join(["ycappuccino_api", a_class_name])
         log = logging.getLogger(__name__)
         log.info("FQCN '{0}' ...".format(w_fqcn))
@@ -21,12 +21,12 @@ class CFQCN(object):
 class YCappuccinoComponent(abc.ABC):
 
     @abc.abstractmethod
-    async def start(self):
+    async def start(self) -> None:
         """start statement for this component"""
         ...
 
     @abc.abstractmethod
-    async def stop(self):
+    async def stop(self) -> None:
         """stop statement for this component"""
 
         ...
@@ -34,16 +34,16 @@ class YCappuccinoComponent(abc.ABC):
 
 class YCappuccinoComponentBind(YCappuccinoComponent):
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._bind_field = []
 
     @abc.abstractmethod
-    async def bind(self, a_service: t.Any):
+    async def bind(self, a_service: t.Any) -> None:
         """bind statement for this component"""
         ...
 
     @abc.abstractmethod
-    async def un_bind(self, a_service: t.Any):
+    async def un_bind(self, a_service: t.Any) -> None:
         """unbind statement for this component"""
         ...
 
@@ -53,14 +53,14 @@ class DefaultMixin:
 
 
 class _YCappuccinoType:
-    def __init__(self, value):
+    def __init__(self, value: t.Any) -> None:
         self.value = value
 
 
 def YCappuccinoType(base_type: type, spec_filter: t.Any = None) -> type:
     class YCappuccinoTypeDefault(_YCappuccinoType, base_type, DefaultMixin):
         @classmethod
-        def set_default(cls, value1: type, value2: str):
+        def set_default(cls, value1: type, value2: t.Any) -> None:
             cls.type = value1
             cls.spec_filter = value2
 

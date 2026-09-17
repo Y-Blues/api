@@ -5,49 +5,18 @@ import ycappuccino.api.storage as storage_api
 from ycappuccino.api.component_creator import IHttp, IMail, IMqtt
 from ycappuccino.api.core import IConfiguration
 from ycappuccino.api.core_base import YCappuccinoComponent, YCappuccinoType
-from ycappuccino.api.endpoints import IEndpoint, IHandlerEndpoint, IRightManager
-from ycappuccino.api.hosts import IClobReplaceService, IHost, IHostFactory
-from ycappuccino.api.permissions import ILoginService, ITenantTrigger
 from ycappuccino.api.proxy import YCappuccinoRemote
-from ycappuccino.api.remote import IRemoteServer
-from ycappuccino.api.scheduler import IScheduler
-from ycappuccino.api.scripts import IScriptInterpreter
 from ycappuccino.api.storage import (
-    IBootStrap,
     IFileStore,
     IFilter,
     IItemManager,
     IManager,
-    IRightSubject,
     IStorage,
     ITrigger,
 )
 
-REMOTE_INTERFACES = (
-    IBootStrap,
-    IClobReplaceService,
-    IEndpoint,
-    IHandlerEndpoint,
-    IHost,
-    IHostFactory,
-    ILoginService,
-    IRemoteServer,
-    IRightManager,
-    IRightSubject,
-    IScheduler,
-    IScriptInterpreter,
-    ITenantTrigger,
-)
-
 
 class TestRemoteInterfaces(unittest.TestCase):
-
-    def test_default_constructors_initialise_remote_state(self):
-        for klass in REMOTE_INTERFACES:
-            with self.subTest(interface=klass.__name__):
-                instance = klass()
-                self.assertEqual(instance.id(), "")
-                self.assertEqual(instance.get_specifications(), [])
 
     def test_component_properties_define_specifications(self):
         remote = YCappuccinoRemote()

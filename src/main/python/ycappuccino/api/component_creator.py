@@ -1,3 +1,5 @@
+from typing import Any
+
 from pelix.ipopo.decorators import Property  # type: ignore
 
 from ycappuccino.api.core_base import CFQCN
@@ -8,7 +10,7 @@ class IComponentServiceList(object):
 
     name = CFQCN.build("IComponentServiceList")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """abstract constructor"""
         pass
 
@@ -19,7 +21,7 @@ class IComponentServiceFactory(object):
 
     name = CFQCN.build("IComponentServiceFactory")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """abstract constructor"""
         self._model = None
 
@@ -29,23 +31,23 @@ class IHttp(IComponentServiceFactory):
 
     name = CFQCN.build("IHttp")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """abstract constructor"""
         super(IComponentServiceFactory, self).__init__()
 
-    def get(self, a_header, a_url):
+    def get(self, a_header: dict, a_url: str) -> Any:
         """abstract constructor"""
         pass
 
-    def post(self, a_header, a_url, body):
+    def post(self, a_header: dict, a_url: str, body: Any) -> Any:
         """abstract constructor"""
         pass
 
-    def delete(self, a_header, a_url):
+    def delete(self, a_header: dict, a_url: str) -> Any:
         """abstract constructor"""
         pass
 
-    def put(self, a_header, a_url, body):
+    def put(self, a_header: dict, a_url: str, body: Any) -> Any:
         """abstract constructor"""
         pass
 
@@ -55,11 +57,11 @@ class IMail(IComponentServiceFactory):
 
     name = CFQCN.build("IMail")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """abstract constructor"""
         super(IComponentServiceFactory, self).__init__()
 
-    def send(self, a_mail):
+    def send(self, a_mail: Any) -> Any:
         """abstract constructor"""
         pass
 
@@ -69,13 +71,14 @@ class IMqtt(IComponentServiceFactory):
 
     name = CFQCN.build("IMqtt")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """abstract constructor"""
         super(IComponentServiceFactory, self).__init__()
 
-    def on_connect(client, userdata, flags, rc):
+    # paho-mqtt callback conventions -- args come from the mqtt client library, not imported here
+    def on_connect(client: Any, userdata: Any, flags: Any, rc: Any) -> None:
         pass
 
     # The callback for when a PUBLISH message is received from the server.
-    def on_message(client, userdata, msg):
+    def on_message(client: Any, userdata: Any, msg: Any) -> None:
         pass

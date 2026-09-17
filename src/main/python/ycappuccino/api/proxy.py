@@ -1,11 +1,12 @@
 import types, json
 from pprint import pformat
+from typing import Any
 
 
 from ycappuccino.api.core_base import CFQCN
 
 
-def get_class(kls):
+def get_class(kls: str) -> Any:
     parts = kls.split(".")
     module = ".".join(parts[:-1])
     m = __import__(module)
@@ -19,21 +20,21 @@ class ProxyMethodWrapper:
     Wrapper object for a method to be called.
     """
 
-    def __init__(self, obj, func, name):
+    def __init__(self, obj: "Proxy", func: Any, name: str) -> None:
         self.obj, self.func, self.name = obj, func, name
         assert obj is not None
         assert func is not None
         assert name is not None
 
-    def __call__(self, *args, **kwds):
+    def __call__(self, *args, **kwds) -> Any:
         return self.obj._method_call(self.name, self.func, *args, **kwds)
 
 
 class Proxy(object):
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._objname: str = ""
-        self._obj: any = None
+        self._obj: Any = None
 
     def __getattribute__(self, name: str) -> types.MethodType:
         """
@@ -52,7 +53,7 @@ class Proxy(object):
             else:
                 return att
 
-    def __setitem__(self, key: str, value: any) -> None:
+    def __setitem__(self, key: str, value: Any) -> None:
         """
         Delegate [] syntax.
         """
@@ -64,7 +65,7 @@ class Proxy(object):
         p_meth = ProxyMethodWrapper(self, att, name)
         p_meth(key, value)
 
-    def _call_str(self, name, *args, **kwds):
+    def _call_str(self, name: str, *args, **kwds) -> str:
         """
         Returns a printable version of the call.
         This can be used for tracing.
@@ -77,7 +78,7 @@ class Proxy(object):
         else:
             return "%s.%s(%s)" % (self.__str__(), name, ", ".join(pargs))
 
-    def _method_call(self, name, func, *args, **kwds):
+    def _method_call(self, name: str, func: Any, *args, **kwds) -> Any:
         """
         This method gets called before a method is called.
         """
@@ -124,7 +125,7 @@ class YCappuccinoRemote(object):
 
     name = CFQCN.build("YCappuccinoRemote")
 
-    def __init__(self):
+    def __init__(self) -> None:
         """abstract constructor"""
         self._specifications: list = []
         self._id: str = ""

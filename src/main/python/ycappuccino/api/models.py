@@ -1,3 +1,5 @@
+from typing import Any
+
 from ycappuccino.api.decorators import (
     Item,
     get_item,
@@ -7,7 +9,7 @@ from ycappuccino.api.decorators import (
 )
 
 
-def create_item(a_item, w_model):
+def create_item(a_item: dict, w_model: dict | None) -> "Model":
     if "_class_obj" not in a_item.keys():
         if w_model is None:
             w_instance = Model()
@@ -25,13 +27,13 @@ def create_item(a_item, w_model):
 class Model(YDict):
     """default bean that represent a models to manipulate / store in a database"""
 
-    def __init__(self, a_dict=None):
+    def __init__(self, a_dict: dict | None = None) -> None:
         # init id regarding the dict or models pass
         self._dict = a_dict if a_dict is not None else {}
         self._id = None
         self._mongo_model = {}
 
-    def on_read(self, a_aggregate):
+    def on_read(self, a_aggregate: bool) -> None:
         for key in self._dict.keys():
             w_method = ""
             w_key_model = ""
@@ -65,7 +67,7 @@ class Model(YDict):
 
             # TODO add lookup field
 
-    def on_update(self):
+    def on_update(self) -> None:
         w_item = get_item_by_class(self.__class__)
         for key in self._dict.keys():
             w_method = ""
@@ -88,13 +90,13 @@ class Model(YDict):
                 self._mongo_model[w_key_model] = self._dict[w_key_model]
 
     @Property(name="_id")
-    def id(self, a_value=None):
+    def id(self, a_value: str | None = None) -> None:
         self._id = a_value
 
-    def get_storage_model(self):
+    def get_storage_model(self) -> dict:
         return self._mongo_model
 
-    def update(self, a_dict):
+    def update(self, a_dict: "Model | dict") -> None:
         """update current models dictionnary with the one in parameter. or the models dict in parameter"""
         w_dict = a_dict.__dict__ if isinstance(a_dict, Model) else a_dict
         for k, v in w_dict.items():
