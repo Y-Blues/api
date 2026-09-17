@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from ycappuccino.api.core_base import YCappuccinoComponent
-from ycappuccino.api.decorators import rpc_method
+from ycappuccino.api.decorators import get_rpc_methods, rpc_method
 from ycappuccino.api.endpoints_storage import NotFound
 
 # action checked by IAuthorization for a secure service
@@ -53,6 +53,23 @@ class IExposedService(YCappuccinoComponent, ABC):
     ) -> ServiceResult:
         """handle the request; raise NotFound (endpoints_storage) for an unsupported method/extra_path"""
         raise NotFound(f"service {self.name} does not handle {method} requests itself")
+
+
+def service_routes(service: IExposedService) -> tuple:
+    """the ServiceRoutes documenting a service: its explicit routes, otherwise one per @rpc_method (its
+    parameters without the subject, which is never part of a request)"""
+    if service.routes:
+        return tuple(service.routes)
+    return tuple(
+        ServiceRoute(
+            method=metadata["method"],
+            path=metadata["path"],
+            summary=metadata["summary"],
+            params={name: kind for name, kind in metadata["params"].items() if name != "subject"},
+            return_type=metadata["return_type"],
+        )
+        for metadata in get_rpc_methods(type(service)).values()
+    )
 
 
 class IServiceEndpoint(YCappuccinoComponent, ABC):

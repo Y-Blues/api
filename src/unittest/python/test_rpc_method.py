@@ -105,5 +105,53 @@ class TestServiceRoute(unittest.TestCase):
         self.assertEqual((route.params, route.return_type), ({"id": str}, dict))
 
 
+
+class TestServiceRoutes(unittest.TestCase):
+
+    def test_explicit_routes_win(self):
+        from ycappuccino.api.endpoints_service import IExposedService, ServiceRoute, service_routes
+
+        class Documented(IExposedService):
+            routes = (ServiceRoute("POST", summary="documented by hand"),)
+
+            async def start(self):
+                pass
+
+            async def stop(self):
+                pass
+
+            @rpc_method(method="GET")
+            async def status(self) -> str:
+                return "ok"
+
+        self.assertEqual(service_routes(Documented()), (ServiceRoute("POST", summary="documented by hand"),))
+
+    def test_rpc_methods_become_typed_routes_without_the_subject(self):
+        from ycappuccino.api.endpoints_service import IExposedService, ServiceRoute, service_routes
+
+        class Typed(IExposedService):
+            async def start(self):
+                pass
+
+            async def stop(self):
+                pass
+
+            @rpc_method(method="POST", path="/{item_id}/execute", summary="run")
+            async def execute(self, item_id: str, count: int, subject: dict | None) -> dict:
+                return {}
+
+            @rpc_method(method="GET")
+            async def status(self) -> str:
+                return "ok"
+
+        self.assertEqual(
+            service_routes(Typed()),
+            (
+                ServiceRoute("POST", "/{item_id}/execute", "run", {"item_id": str, "count": int}, dict),
+                ServiceRoute("GET", "", "", {}, str),
+            ),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
