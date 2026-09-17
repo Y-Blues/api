@@ -173,6 +173,26 @@ class TestEndpointsServiceInterfaces(unittest.TestCase):
         self.assertTrue(inspect.iscoroutinefunction(IExposedService.call))
         self.assertTrue(inspect.iscoroutinefunction(IServiceEndpoint.call))
 
+    async def _default_call(self):
+        from ycappuccino.api.endpoints_service import IExposedService
+
+        class Typed(IExposedService):
+            async def start(self):
+                pass
+
+            async def stop(self):
+                pass
+
+        return await Typed().call("POST", [], {}, None, None)
+
+    def test_exposed_service_call_is_optional_and_not_found_by_default(self):
+        import asyncio
+
+        from ycappuccino.api.endpoints_storage import NotFound
+
+        with self.assertRaises(NotFound):
+            asyncio.run(self._default_call())
+
     def test_exposed_service_defaults(self):
         from ycappuccino.api.endpoints_service import IExposedService
 

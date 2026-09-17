@@ -11,6 +11,7 @@ from typing import Any, Optional
 
 from ycappuccino.api.core_base import YCappuccinoComponent
 from ycappuccino.api.decorators import rpc_method
+from ycappuccino.api.endpoints_storage import NotFound
 
 # action checked by IAuthorization for a secure service
 CALL = "call"
@@ -36,18 +37,22 @@ class ServiceRoute:
 
 
 class IExposedService(YCappuccinoComponent, ABC):
-    """a named action, published under its name"""
+    """a named action, published under its name.
+
+    A service answers its requests either through its @rpc_method methods (IServiceEndpoint routes a
+    request to the one whose HTTP method and path template match), or by overriding call() to handle
+    every request itself; an overridden call() takes precedence."""
 
     name: str = ""
     secure: bool = True
     # ServiceRoute instances describing the requests the service answers; empty: undocumented
     routes: tuple = ()
 
-    @abstractmethod
     async def call(
         self, method: str, extra_path: list, params: dict, body: Any, subject: Optional[dict]
     ) -> ServiceResult:
         """handle the request; raise NotFound (endpoints_storage) for an unsupported method/extra_path"""
+        raise NotFound(f"service {self.name} does not handle {method} requests itself")
 
 
 class IServiceEndpoint(YCappuccinoComponent, ABC):
