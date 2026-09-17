@@ -26,7 +26,7 @@ class ProxyMethodWrapper:
         assert func is not None
         assert name is not None
 
-    def __call__(self, *args, **kwds) -> Any:
+    def __call__(self, /, *args, **kwds) -> Any:
         return self.obj._method_call(self.name, self.func, *args, **kwds)
 
 
@@ -65,7 +65,7 @@ class Proxy(object):
         p_meth = ProxyMethodWrapper(self, att, name)
         p_meth(key, value)
 
-    def _call_str(self, name: str, *args, **kwds) -> str:
+    def _call_str(self, name: str, /, *args, **kwds) -> str:
         """
         Returns a printable version of the call.
         This can be used for tracing.
@@ -78,7 +78,7 @@ class Proxy(object):
         else:
             return "%s.%s(%s)" % (self.__str__(), name, ", ".join(pargs))
 
-    def _method_call(self, name: str, func: Any, *args, **kwds) -> Any:
+    def _method_call(self, name: str, func: Any, /, *args, **kwds) -> Any:
         """
         This method gets called before a method is called.
         """

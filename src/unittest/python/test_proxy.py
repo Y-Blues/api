@@ -48,5 +48,21 @@ class TestProxy(unittest.TestCase):
         )
 
 
+
+class TestProxyForwardsAnyKeywordArgument(unittest.TestCase):
+
+    def test_a_method_with_name_or_func_parameters_is_called_through_the_proxy(self):
+        from ycappuccino.api.proxy import Proxy
+
+        class Target:
+            def call(self, name, func=None, subject=None):
+                return (name, func, subject)
+
+        proxy = Proxy()
+        proxy._obj = Target()
+
+        self.assertEqual(proxy.call(name="login", func="f", subject={"sub": "a"}), ("login", "f", {"sub": "a"}))
+
+
 if __name__ == "__main__":
     unittest.main()
