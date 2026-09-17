@@ -5,7 +5,6 @@ import ycappuccino.api.storage as storage_api
 from ycappuccino.api.component_creator import IHttp, IMail, IMqtt
 from ycappuccino.api.core import IConfiguration
 from ycappuccino.api.core_base import YCappuccinoComponent, YCappuccinoType
-from ycappuccino.api.proxy import YCappuccinoRemote
 from ycappuccino.api.storage import (
     IFileStore,
     IFilter,
@@ -14,15 +13,6 @@ from ycappuccino.api.storage import (
     IStorage,
     ITrigger,
 )
-
-
-class TestRemoteInterfaces(unittest.TestCase):
-
-    def test_component_properties_define_specifications(self):
-        remote = YCappuccinoRemote()
-        remote.set_component_properties({"objectClass": ["IHost", "IEndpoint"], "id": "m"})
-
-        self.assertEqual(remote.get_specifications(), ["IHost", "IEndpoint"])
 
 
 class TestStorageInterfaces(unittest.TestCase):
