@@ -7,6 +7,7 @@ import typing as t
 
 # decorators to describe item and element to store in mongo if it's mongo element
 import functools
+import inspect
 
 
 class YDict(object):
@@ -314,6 +315,48 @@ def References(name: str) -> t.Callable[[t.Callable], t.Callable]:
         return wrapper_reference
 
     return decorator_reference
+
+
+def rpc_method(
+    method: str = "POST", path: str = "", summary: str = "", secure: bool = True
+) -> t.Callable[[t.Callable], t.Callable]:
+    """
+    marks a method of a component interface as callable from outside the framework (a browser, an HTTP
+    client): through __remote_dispatch__ for a framework client, through an HTTP route (method, path)
+    otherwise. secure=True: the caller must be authenticated and authorized to "call" it;
+    secure=False: the method checks its caller itself. Put it on the interface's abstract method, never
+    on an implementation: an implementation cannot widen the public surface. The method is returned
+    unchanged, only annotated.
+    """
+
+    def decorator(func: t.Callable) -> t.Callable:
+        try:
+            hints = t.get_type_hints(func)
+        except Exception:
+            hints = dict(getattr(func, "__annotations__", {}))
+        parameters = [name for name in inspect.signature(func).parameters if name != "self"]
+        func._ycappuccino_rpc_method = {
+            "method": method,
+            "path": path,
+            "summary": summary,
+            "secure": secure,
+            "params": {name: hints[name] for name in parameters if name in hints},
+            "return_type": hints.get("return"),
+        }
+        return func
+
+    return decorator
+
+
+def get_rpc_methods(klass: type) -> dict:
+    """method name -> @rpc_method metadata, for klass and every class it inherits from"""
+    methods = {}
+    for base in reversed(klass.__mro__):
+        for name, attribute in vars(base).items():
+            metadata = getattr(attribute, "_ycappuccino_rpc_method", None)
+            if metadata is not None:
+                methods[name] = metadata
+    return methods
 
 
 primitive = (

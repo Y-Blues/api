@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from ycappuccino.api.core_base import YCappuccinoComponent
+from ycappuccino.api.decorators import rpc_method
 
 # actions checked by IAuthorization
 READ = "read"
@@ -40,28 +41,34 @@ class InvalidRequest(CrudError):
 class ICrud(YCappuccinoComponent, ABC):
     """reads and writes of the documents of an item; drafts are excluded"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_one(
         self, item_id: str, id: str, params: Optional[dict] = None, subject: Optional[dict] = None
     ) -> dict:
         """document id; NotFound when missing"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_many(self, item_id: str, params: Optional[dict] = None, subject: Optional[dict] = None) -> dict:
         """{"items": documents matching params, "total": number of matching documents}"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def create(self, item_id: str, fields: dict, subject: Optional[dict] = None) -> dict:
         """upsert the document fields["_id"], or a new uuid, and return it"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def update(self, item_id: str, id: str, fields: dict, subject: Optional[dict] = None) -> dict:
         """upsert the fields of the document id and return it"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def delete(self, item_id: str, id: str, subject: Optional[dict] = None) -> None:
         """delete the document id and its drafts; NotFound when missing"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def delete_many(self, item_id: str, filter: dict, subject: Optional[dict] = None) -> int:
         """delete the documents matching the non empty filter, and their drafts; return their number"""
@@ -70,26 +77,31 @@ class ICrud(YCappuccinoComponent, ABC):
 class IDrafts(YCappuccinoComponent, ABC):
     """named drafts of the documents of an item"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_one(
         self, item_id: str, id: str, draft: str, params: Optional[dict] = None, subject: Optional[dict] = None
     ) -> dict:
         """draft version of the document id, else the document; NotFound when both are missing"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_many(
         self, item_id: str, draft: str, params: Optional[dict] = None, subject: Optional[dict] = None
     ) -> dict:
         """{"items", "total"} where the documents having the draft are replaced by their draft version"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def save(self, item_id: str, id: str, draft: str, fields: dict, subject: Optional[dict] = None) -> dict:
         """upsert the draft of the document id and return its draft version"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def publish(self, item_id: str, id: str, draft: str, subject: Optional[dict] = None) -> dict:
         """write the draft on the document id, delete the draft and return the document"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def discard(self, item_id: str, id: str, draft: str, subject: Optional[dict] = None) -> None:
         """delete the draft of the document id; NotFound when missing"""
@@ -98,22 +110,27 @@ class IDrafts(YCappuccinoComponent, ABC):
 class IItemCatalog(YCappuccinoComponent, ABC):
     """metadata of the items readable by a subject"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_items(self, subject: Optional[dict] = None) -> list:
         """public metadata of the non abstract items readable by the subject"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_item(self, item_id: str, subject: Optional[dict] = None) -> dict:
         """public metadata of the item"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_item_by_plural(self, plural: str, subject: Optional[dict] = None) -> dict:
         """public metadata of the item with this plural name"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_schema(self, item_id: str, subject: Optional[dict] = None) -> dict:
         """json schema of the item"""
 
+    @rpc_method(secure=False)
     @abstractmethod
     async def get_empty(self, item_id: str, subject: Optional[dict] = None) -> Optional[dict]:
         """storage model of the empty instance of the item, or None"""

@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from ycappuccino.api.core_base import YCappuccinoComponent
+from ycappuccino.api.decorators import rpc_method
 
 # action checked by IAuthorization for a secure service
 CALL = "call"
@@ -29,6 +30,9 @@ class ServiceRoute:
     # extra path after the service name; "{name}" segments are path parameters
     path: str = ""
     summary: str = ""
+    # parameter name -> type, and the return type, of the method answering the request
+    params: dict = field(default_factory=dict)
+    return_type: type | None = None
 
 
 class IExposedService(YCappuccinoComponent, ABC):
@@ -49,6 +53,7 @@ class IExposedService(YCappuccinoComponent, ABC):
 class IServiceEndpoint(YCappuccinoComponent, ABC):
     """finds a service by name and dispatches to it, applying its authorization"""
 
+    @rpc_method(summary="call a named service", secure=False)
     @abstractmethod
     async def call(
         self, name: str, method: str, extra_path: list, params: dict, body: Any, subject: Optional[dict]
